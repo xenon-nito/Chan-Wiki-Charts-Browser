@@ -31,7 +31,7 @@ const categoryIcons = {
 };
 
 function getIndexFile(lib) {
-  return `${lib}_index.json`;
+  return `/${lib}_index.json`;  // load from root folder
 }
 
 function collectAllImages(data, lib) {
