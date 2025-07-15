@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>Viewer - chan charts wiki</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      touch-action: none;
+      background-color: #111827;
+    }
+    #viewer-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    #chart-image {
+      position: absolute;
+      max-width: none;
+      max-height: none;
+      transform-origin: top left;
+      touch-action: none;
+      transition: transform 0.05s ease-out;
+    }
+    .control-panel {
+      position: fixed;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+    }
+    .control-panel button {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<div id="viewer-container">
+  <img id="chart-image" alt="Chart" />
+  <div class="absolute top-4 left-4 z-10">
+    <a href="index.html" class="bg-indigo-600 text-white px-3 py-1 rounded text-sm shadow">← Back</a>
+  </div>
+
+  <div class="control-panel flex flex-col">
+    <button id="zoom-in" class="bg-gray-700 text-white p-2 rounded shadow opacity-80">➕</button>
+    <button id="zoom-out" class="bg-gray-700 text-white p-2 rounded shadow opacity-80">➖</button>
+    <input type="range" id="zoom-range" min="0.5" max="4" step="0.1" value="1" class="w-24 mt-2 rotate-90 mx-auto">
+  </div>
+</div>
+
+<script>
+const img = document.getElementById("chart-image");
+const zoomRange = document.getElementById("zoom-range");
+const zoomInBtn = document.getElementById("zoom-in");
+const zoomOutBtn = document.getElementById("zoom-out");
+
+const params = new URLSearchParams(window.location.search);
+const imgPath = params.get("img");
+img.src = "/" + decodeURIComponent(imgPath);
+
+let scale = 1;
+let panX = 0;
+let panY = 0;
+let startX, startY;
+let isDragging = false;
+
+function updateTransform() {
+  img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+}
+
+img.addEventListener("mousedown", (e) => {
+  isDragging = true;
+  startX = e.clientX - panX;
+  startY = e.clientY - panY;
+});
+
+img.addEventListener("mouseup", () => isDragging = false);
+img.addEventListener("mouseleave", () => isDragging = false);
+img.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+  panX = e.clientX - startX;
+  panY = e.clientY - startY;
+  updateTransform();
+});
+
+img.addEventListener("touchstart", (e) => {
+  isDragging = true;
+  const touch = e.touches[0];
+  startX = touch.clientX - panX;
+  startY = touch.clientY - panY;
+}, { passive: false });
+
+img.addEventListener("touchmove", (e) => {
+  if (!isDragging) return;
+  const touch = e.touches[0];
+  panX = touch.clientX - startX;
+  panY = touch.clientY - startY;
+  updateTransform();
+}, { passive: false });
+
+img.addEventListener("touchend", () => isDragging = false);
+
+zoomInBtn.onclick = () => {
+  scale = Math.min(4, scale + 0.2);
+  zoomRange.value = scale;
+  updateTransform();
+};
+
+zoomOutBtn.onclick = () => {
+  scale = Math.max(0.5, scale - 0.2);
+  zoomRange.value = scale;
+  updateTransform();
+};
+
+zoomRange.addEventListener("input", (e) => {
+  scale = parseFloat(e.target.value);
+  updateTransform();
+});
+</script>
+
+</body>
+</html>

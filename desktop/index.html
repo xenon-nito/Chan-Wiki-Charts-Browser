@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chan Charts Wiki</title>
+  <script defer src="app.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+	/* Dark theme styles (default) */
+	  body { background-color: #343541; color: #d1d5db; }
+	  .sidebar { background-color: #202123; }
+	  .sidebar a:hover { background-color: #2c2d30; }
+	  .thumb-wrapper img {
+		transition: transform 0.2s;
+		max-height: 180px;
+		object-fit: contain;
+		margin: 0 auto;
+	  }
+	  .thumb-wrapper img:hover {
+		transform: scale(1.05);
+	  }
+
+	  /* Light theme styles (applied when body has class 'light') */
+	  body.light {
+		background-color: #f9f9f9;
+		color: #1a1a1a;
+	  }
+	  body.light .sidebar {
+		background-color: #f0f0f0;
+	  }
+	  body.light .sidebar a:hover {
+		background-color: #e2e2e2;
+	  }
+	  body.light input,
+	  body.light #search-box {
+		background-color: #ffffff;
+		color: #000000;
+	  }
+	  body.light .thumb-wrapper .text-gray-300 {
+		color: #333333;
+	  }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+  <!-- Sidebar -->
+  <aside class="sidebar w-64 p-4 overflow-y-auto">
+    <h1 class="text-lg font-bold mb-4">Categories</h1>
+    <nav id="category-list" class="space-y-2"></nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 overflow-y-auto p-6">
+	<div class="flex justify-between items-center mb-4">
+	  <button id="theme-toggle" class="px-3 py-1 rounded bg-gray-600 hover:bg-gray-500 text-sm">
+		Toggle Light Mode
+	  </button>
+	</div>
+	<div class="flex justify-between items-center mb-4">
+	  <h2 id="category-title" class="text-2xl font-bold">Select a category</h2>
+	  <button id="home-button" class="ml-4 px-3 py-1 rounded bg-gray-600 hover:bg-gray-500 text-sm">
+		🏠 Home
+	  </button>
+	</div>	
+
+	<input
+	  id="search-box"
+	  type="text"
+	  placeholder="Search images..."
+	  class="w-full p-2 mb-4 rounded bg-gray-800 text-white placeholder-gray-400"
+	/>
+	<div id="image-viewer" class="flex flex-wrap justify-center items-center gap-6 px-4 py-6 min-h-[60vh]"></div>
+  </main>
+</body>
+</html>
