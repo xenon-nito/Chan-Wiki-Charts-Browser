@@ -56,3 +56,5 @@ Favorites are saved in your browser (via `localStorage`). They persist across vi
 
 Thanks to all the Anons that made these charts.
 Created using [ChatGPT](https://openai.com/chatgpt), with additions and fixes for offline browsing, category icons, mobile UX, and library expansion.
+
+;3
