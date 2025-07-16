@@ -9,21 +9,26 @@
   <link rel="stylesheet" href="styles.css">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body class="flex h-screen overflow-hidden flex-col md:flex-row">
   <!-- Sidebar -->
   <aside class="sidebar w-64 p-4 overflow-y-auto">
     <h1 class="text-lg font-bold mb-4">Categories</h1>
     <nav id="category-list" class="space-y-2"></nav>
   </aside>
+	<div class="mobile-header flex justify-between items-center bg-gray-800 p-3 w-full md:hidden" id="mobile-header">
+	  <button class="burger-menu text-2xl text-white" id="burger-button">☰</button>
+	  <button id="theme-toggle-mobile" class="theme-toggle-button text-2xl text-white">🌓</button>
+	</div>
 
   <!-- Main content -->
   <main class="flex-1 overflow-y-auto p-6">
 	
 	<div class="flex justify-between items-center mb-4">
-	  <button id="theme-toggle" class="px-3 py-1 rounded bg-gray-600 hover:bg-gray-500 text-sm">
-		Toggle Light Mode
-	  </button>
+		<div class="flex-1"></div>
+	  <button id="theme-toggle-desktop" class="px-3 py-1 rounded bg-gray-600 hover:bg-gray-500 text-sm hidden md:block">🌓</button>
 	</div>
 	<div id="breadcrumb" class="text-sm text-gray-300 px-4 py-2"></div>
 	<div class="flex justify-between items-center mb-4">
@@ -42,4 +47,5 @@
 	<div id="image-viewer" class="opacity-100 translate-y-0 transition-all duration-300"></div>
   </main>
 </body>
+<div class="overlay" id="menu-overlay"></div>
 </html>

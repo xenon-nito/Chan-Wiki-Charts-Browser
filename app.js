@@ -5,7 +5,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchBox = document.getElementById("search-box");
   const homeButton = document.getElementById("home-button");
   const breadcrumb = document.getElementById("breadcrumb");
-
+  
+    //Mobile Burger Menu 
+	  function closeMobileMenu() {
+		  if (window.innerWidth <= 768) {
+			sidebar.classList.remove("active");
+			burgerButton.style.display = "block";
+		  }
+		}
+ //
+	function fadeTransition(callback) {
+	  const container = document.getElementById("image-viewer");
+	  
+	  // Add transition classes if not already present
+	  container.classList.add("transition-opacity", "duration-300");
+	  
+	  // Force reflow to ensure transition starts
+	  void container.offsetWidth;
+	  
+	  // Start fade out
+	  container.classList.add("opacity-0");
+	  
+	  setTimeout(() => {
+		callback(); // Content replacement happens here
+		
+		// Force another reflow
+		void container.offsetWidth;
+		
+		// Fade back in
+		container.classList.remove("opacity-0");
+	  }, 300);
+	}
   function stripPrefix(name) {
     return name.replace(/^\d+[_ ]/, "").replace(/_/g, " ").replace(/\.[^.]+$/, "");
   }
@@ -94,104 +124,173 @@ document.addEventListener("DOMContentLoaded", () => {
     chartIndex = globalIndexes[lib];
     allImages = collectAllImages(chartIndex, lib);
     buildSidebar();
-    safeRender(() => renderCategoryTiles("category"));
+    safeRender(() => fadeTransition(() => renderCategoryTiles("category")));
   }
 
-  function buildSidebar() {
-    categoryList.innerHTML = "";
+function buildSidebar() {
+		if (window.innerWidth <= 768) {
+	  const closeBtn = document.createElement("button");
+	  closeBtn.textContent = "✖️ Close Menu";
+	  closeBtn.className = "block w-full text-left px-3 py-2 mb-4 rounded bg-red-600 hover:bg-red-500 font-semibold";
+	  closeBtn.onclick = () => {
+		closeMobileMenu();
+	  };
+	  categoryList.appendChild(closeBtn);
+	}
+  categoryList.innerHTML = "";
+  
+  if (window.innerWidth <= 768) {
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "✖️ Close Menu";
+  closeBtn.className = "block w-full text-left px-3 py-2 mb-4 rounded bg-red-600 hover:bg-red-500 font-semibold";
 
-    if (!currentLibrary) {
-      const libraries = [
-        { name: "lit", label: "📚 Literature" },
-        { name: "tv", label: "📺 Television" },
-        { name: "games", label: "🎮 Games" },
-        { name: "anime", label: "🍥 Anime" },
-        { name: "music", label: "🎵 Music" }
-      ];
-      libraries.forEach(lib => {
-        const link = document.createElement("a");
-        link.href = "#";
-        link.textContent = lib.label;
-        link.className = "block px-3 py-2 rounded hover:bg-gray-700 font-semibold";
-        link.onclick = () => {
-          const hash = `#${lib.name}`;
-          sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
-          history.pushState({}, "", hash);
-          loadLibrary(lib.name);
-        };
-        categoryList.appendChild(link);
-      });
-      return;
-    }
+  closeBtn.onclick = () => {
+    closeMobileMenu();
+  };
 
-    const favBtn = document.createElement("a");
-    favBtn.href = "#";
-    favBtn.textContent = "⭐ Favorites";
-    favBtn.className = "block px-3 py-2 mb-4 rounded bg-gray-700 hover:bg-gray-600 font-semibold";
-    favBtn.onclick = () => {
-      const favs = getFavorites(currentLibrary).map(path => ({ path, library: currentLibrary }));
-      categoryTitle.textContent = "⭐ Favorites";
-      currentImages = favs;
-      const hash = `#${currentLibrary}/favorites`;
-      sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
-      history.pushState({}, "", hash);
-      safeRender(() => renderImages(favs));
-    };
-    categoryList.appendChild(favBtn);
+  categoryList.appendChild(closeBtn);
+}
+  
 
-    Object.keys(chartIndex)
+  if (!currentLibrary) {
+    const libraries = [
+      { name: "lit", label: "📚 Literature" },
+      { name: "tv", label: "📺 Television" },
+      { name: "games", label: "🎮 Games" },
+      { name: "anime", label: "🍥 Anime" },
+      { name: "music", label: "🎵 Music" }
+    ];
+    libraries.forEach(lib => {
+      const link = document.createElement("a");
+      link.href = "#";
+      link.textContent = lib.label;
+      link.className = "block px-3 py-2 rounded hover:bg-gray-700 font-semibold";
+      link.onclick = () => {
+        const hash = `#${lib.name}`;
+        sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
+        history.pushState({}, "", hash);
+        loadLibrary(lib.name);
+      };
+      categoryList.appendChild(link);
+    });
+    return;
+  }
+
+  const favBtn = document.createElement("a");
+  favBtn.href = "#";
+  favBtn.textContent = "⭐ Favorites";
+  favBtn.className = "block px-3 py-2 mb-4 rounded bg-gray-700 hover:bg-gray-600 font-semibold";
+  favBtn.onclick = () => {
+    const favs = getFavorites(currentLibrary).map(path => ({ path, library: currentLibrary }));
+    categoryTitle.textContent = "⭐ Favorites";
+    currentImages = favs;
+    const hash = `#${currentLibrary}/favorites`;
+    sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
+    history.pushState({}, "", hash);
+    safeRender(() => fadeTransition(() => renderImages(favs)));
+  };
+  categoryList.appendChild(favBtn);
+
+	  Object.keys(chartIndex)
 		.sort((a, b) => stripPrefix(a).localeCompare(stripPrefix(b)))
 		.forEach(top => {
-      const displayName = stripPrefix(top);
-      const icon = categoryIcons[top] || "📂";
-      const wrapper = document.createElement("div");
+		  const displayName = stripPrefix(top);
+		  const icon = categoryIcons[top] || "📂";
+		  const wrapper = document.createElement("div");
 
-      const topLink = document.createElement("a");
-      topLink.href = "#";
-      topLink.textContent = `${icon} ${displayName}`;
-      topLink.className = "block font-semibold px-3 py-2 rounded hover:bg-gray-700 cursor-pointer";
-      topLink.onclick = () => {
-        const subNav = wrapper.querySelector(".sub-nav");
-        subNav.classList.toggle("hidden");
-      };
-      wrapper.appendChild(topLink);
+		  const topLink = document.createElement("a");
+		  topLink.href = "#";
+		  topLink.textContent = `${icon} ${displayName}`;
+		  topLink.className = "block font-semibold px-3 py-2 rounded hover:bg-gray-700 cursor-pointer";
+		topLink.onclick = () => {
+		  const allSubMenus = document.querySelectorAll(".sub-nav");
+		  const subNav = wrapper.querySelector(".sub-nav");
 
-      const subNav = document.createElement("div");
-      subNav.className = "ml-4 space-y-1 hidden sub-nav";
-      wrapper.appendChild(subNav);
+		  allSubMenus.forEach(menu => {
+			if (menu !== subNav && !menu.classList.contains("hidden")) {
+			  animateSlide(menu, "up");
+			}
+		  });
 
-      const subfolders = chartIndex[top];
-      Object.keys(subfolders).forEach(sub => {
-        const label = sub === "_root" ? "Main" : stripPrefix(sub);
-        const fullKey = `${top}/${sub}`;
-        const icon = categoryIcons[fullKey] || "";
-        const subLink = document.createElement("a");
-        subLink.href = "#";
-        subLink.textContent = `${icon} ${label}`;
-        subLink.className = "block text-sm px-2 py-1 rounded hover:bg-gray-700";
+		  if (subNav.classList.contains("hidden")) {
+			animateSlide(subNav, "down");
+		  } else {
+			animateSlide(subNav, "up");
+		  }
+		};
+				  wrapper.appendChild(topLink);
 
-        subLink.onclick = (() => {
-          const scopedTop = top;
-          const scopedSub = sub;
-          const scopedLabel = label;
-          const scopedDisplay = displayName;
-          return () => {
-            const hash = `#${currentLibrary}/${scopedTop}/${scopedSub}`;
-            sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
-            history.pushState({}, "", hash);
-            categoryTitle.textContent = `${scopedDisplay} / ${scopedLabel}`;
-            searchBox.value = "";
-            currentImages = chartIndex[scopedTop][scopedSub].map(p => ({ path: p, library: currentLibrary }));
-            safeRender(() => renderImages(currentImages));
-          };
-        })();
+		  const subNav = document.createElement("div");
+		  subNav.className = "ml-4 space-y-1 hidden sub-nav";
+		  wrapper.appendChild(subNav);
 
-        subNav.appendChild(subLink);
-      });
+		  const subfolders = chartIndex[top];
+		const subKeys = Object.keys(subfolders);
 
-      categoryList.appendChild(wrapper);
-    });
-  }
+		// If the only subfolder is "_root", skip rendering it
+		if (subKeys.length === 1 && subKeys[0] === "_root") {
+		  const label = stripPrefix(top);
+		  const icon = categoryIcons[top] || "📂";
+		  const subfolder = subfolders["_root"];
+
+		  topLink.onclick = () => {
+			const hash = `#${currentLibrary}/${top}/_root`;
+			sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
+			history.pushState({}, "", hash);
+			categoryTitle.textContent = `${label}`;
+			currentImages = subfolder.map(p => ({ path: p, library: currentLibrary }));
+			safeRender(() => fadeTransition(() => renderImages(currentImages)));
+			fadeTransition(() => renderSubcategoryTiles(top, subfolders));
+			    closeMobileMenu();
+		  };
+		} else {
+		  subKeys.forEach(sub => {
+			const label = sub === "_root" ? "Main" : stripPrefix(sub);
+			const fullKey = `${top}/${sub}`;
+			const icon = categoryIcons[fullKey] || "";
+			const subLink = document.createElement("a");
+			subLink.href = "#";
+			subLink.textContent = `${icon} ${label}`;
+			subLink.className = "block text-sm px-2 py-1 rounded hover:bg-gray-700";
+
+			subLink.onclick = (() => {
+			  const scopedTop = top;
+			  const scopedSub = sub;
+			  const scopedLabel = label;
+			  const scopedDisplay = stripPrefix(top);
+			  return () => {
+				  closeMobileMenu();
+				const hash = `#${currentLibrary}/${scopedTop}/${scopedSub}`;
+				sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
+				history.pushState({}, "", hash);
+
+				const subfolder = chartIndex[scopedTop][scopedSub];
+
+				if (Array.isArray(subfolder)) {
+				  categoryTitle.textContent = `${scopedDisplay} / ${scopedLabel}`;
+				  currentImages = subfolder.map(p => ({ path: p, library: currentLibrary }));
+				  safeRender(() => fadeTransition(() => renderImages(currentImages)));
+				} else if (
+				  typeof subfolder === "object" &&
+				  Object.keys(subfolder).length === 1 &&
+				  "_root" in subfolder
+				) {
+				  categoryTitle.textContent = `${scopedDisplay} / ${scopedLabel}`;
+				  currentImages = subfolder["_root"].map(p => ({ path: p, library: currentLibrary }));
+				  safeRender(() => fadeTransition(() => renderImages(currentImages)));
+				} else {
+				  categoryTitle.textContent = `${scopedDisplay} / ${scopedLabel}`;
+				  safeRender(() => renderSubcategoryTiles(scopedSub, subfolder));
+				}
+			  };
+			})();
+
+			subNav.appendChild(subLink);
+		  });
+		}
+		  categoryList.appendChild(wrapper);
+		});
+	}
 
   function renderCategoryTiles(type = "library") {
     imageViewer.innerHTML = "";
@@ -237,12 +336,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = document.createElement("div");
         card.className = "bg-slate-700 w-full sm:w-44 h-52 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer shadow transition-transform duration-300 ease-in-out transform hover:scale-105 hover:rotate-1";
         card.innerHTML = `<div class="text-4xl">${icon}</div><div class="text-lg font-bold">${displayName}</div>`;
-        card.onclick = () => {
-          const hash = `#${currentLibrary}/${folder}`;
-          sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
-          history.pushState({}, "", hash);
-          safeRender(() => renderSubcategoryTiles(folder, subfolders));
-        };
+		card.onclick = () => {
+		  const hash = `#${currentLibrary}/${folder}`;
+		  sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
+		  history.pushState({}, "", hash);
+
+		  // Check if only "_root" exists
+		  if (
+			typeof subfolders === "object" &&
+			Object.keys(subfolders).length === 1 &&
+			"_root" in subfolders
+		  ) {
+			const display = stripPrefix(folder);
+			const label = "Main";
+			const images = subfolders["_root"].map(p => ({ path: p, library: currentLibrary }));
+			categoryTitle.textContent = `${display} / ${label}`;
+			safeRender(() => fadeTransition(() => renderImages(images)));
+		  } else {
+			safeRender(() => fadeTransition(() => renderSubcategoryTiles(folder, subfolders)));
+		  }
+		};
         imageViewer.appendChild(card);
       });
     }
@@ -264,7 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const hash = `#${currentLibrary}/${categoryKey}/${sub}`;
         sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
         history.pushState({}, "", hash);
-        safeRender(() => loadCategory(`${display} / ${label}`, subfolders[sub].map(p => ({ path: p, library: currentLibrary }))));
+        safeRender(() => fadeTransition(() => loadCategory(`${display} / ${label}`, subfolders[sub].map(p => ({ path: p, library: currentLibrary })))));
       };
       imageViewer.appendChild(card);
     });
@@ -274,7 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
     categoryTitle.textContent = title;
     currentImages = images.slice();
     searchBox.value = "";
-    safeRender(() => renderImages(currentImages));
+    safeRender(() => fadeTransition(() => renderImages(currentImages)));
   }
 
   function renderImages(images) {
@@ -335,7 +448,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentLibrary = "";
     history.pushState({}, "", "#home");
     sessionStorage.setItem("lastCategoryURL", window.location.pathname + "#home");
-    safeRender(() => renderCategoryTiles("library"));
+    safeRender(() => fadeTransition(() => renderCategoryTiles("library")));
   };
 
   searchBox.addEventListener("input", (e) => {
@@ -351,7 +464,7 @@ document.addEventListener("DOMContentLoaded", () => {
       stripPrefix(item.path.split("/").pop().toLowerCase()).includes(query)
     );
     categoryTitle.textContent = `Search results for: "${query}"`;
-    safeRender(() => renderImages(filtered));
+    safeRender(() => fadeTransition(() => renderImages(filtered)));
   });
 
   function getFavorites(lib) {
@@ -377,9 +490,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (top && sub && globalIndexes[lib][top]?.[sub]) {
       categoryTitle.textContent = `${stripPrefix(top)} / ${stripPrefix(sub)}`;
       currentImages = globalIndexes[lib][top][sub].map(p => ({ path: p, library: lib }));
-      safeRender(() => renderImages(currentImages));
+      safeRender(() => fadeTransition(() => renderImages(currentImages)));
     } else if (top) {
-      safeRender(() => renderSubcategoryTiles(top, globalIndexes[lib][top]));
+	  safeRender(() => fadeTransition(() => renderSubcategoryTiles(top, globalIndexes[lib][top])));
     }
   }
 
@@ -389,28 +502,84 @@ document.addEventListener("DOMContentLoaded", () => {
       allImagesGlobal.push(...collectAllImages(data, lib));
     })
   )).then(() => {
-    safeRender(() => renderCategoryTiles("library"));
+    safeRender(() => fadeTransition(() => renderCategoryTiles("library")));
     handleInitialHash();
 	window.addEventListener("hashchange", () => handleInitialHash());
   });
     // Theme toggle logic
-  const themeToggle = document.getElementById("theme-toggle");
-  const body = document.body;
+	const themeToggleDesktop = document.getElementById("theme-toggle-desktop");
+	const themeToggleMobile = document.getElementById("theme-toggle-mobile");
 
-  // Load theme preference from localStorage
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "light") {
-    body.classList.add("light");
-  }
+	const body = document.body;
 
-  themeToggle.addEventListener("click", () => {
-    body.classList.toggle("light");
-    const newTheme = body.classList.contains("light") ? "light" : "dark";
-    localStorage.setItem("theme", newTheme);
-    themeToggle.textContent = newTheme === "light" ? "Toggle Dark Mode" : "Toggle Light Mode";
-  });
+	  // Load theme preference from localStorage
+	  const savedTheme = localStorage.getItem("theme");
+	  if (savedTheme === "light") {
+		body.classList.add("light");
+	  }
+	  function toggleTheme() {
+	  body.classList.toggle("light");
+	  const newTheme = body.classList.contains("light") ? "light" : "dark";
+	  localStorage.setItem("theme", newTheme);
+	}
+	themeToggleDesktop.addEventListener("click", toggleTheme);
+	themeToggleMobile.addEventListener("click", toggleTheme);
 
-  // Update button label on load
-  themeToggle.textContent = body.classList.contains("light") ? "Toggle Dark Mode" : "Toggle Light Mode";
+	function animateSlide(el, action = "down", duration = 300) {
+	  if (!el) return;
 
+	  el.style.overflow = "hidden";
+	  el.style.transition = `height ${duration}ms ease`;
+
+	  if (action === "down") {
+		el.classList.remove("hidden");
+		const height = el.scrollHeight;
+		el.style.height = "0px";
+		requestAnimationFrame(() => {
+		  el.style.height = `${height}px`;
+		});
+
+		setTimeout(() => {
+		  el.style.height = "";
+		  el.style.overflow = "";
+		}, duration);
+
+	  } else if (action === "up") {
+		const height = el.scrollHeight;
+		el.style.height = `${height}px`;
+		requestAnimationFrame(() => {
+		  el.style.height = "0px";
+		});
+
+		setTimeout(() => {
+		  el.classList.add("hidden");
+		  el.style.height = "";
+		  el.style.overflow = "";
+		}, duration);
+	  }
+	}
+	const burgerButton = document.getElementById("burger-button");
+	const sidebar = document.querySelector(".sidebar");
+	const overlay = document.getElementById("menu-overlay");
+	const mobileHeader = document.getElementById("mobile-header");
+
+
+	burgerButton.addEventListener("click", () => {
+	  sidebar.classList.toggle("active");
+
+	  // Hide burger when menu is open
+	  if (sidebar.classList.contains("active")) {
+		burgerButton.style.display = "none";
+		mobileHeader.style.display = "none";
+	  } else {
+		burgerButton.style.display = "block";
+		mobileHeader.style.display = "flex";
+	  }
+	});
+
+	overlay.addEventListener("click", () => {
+	  sidebar.classList.remove("active");
+	  burgerButton.style.display = "block";
+	  mobileHeader.style.display = "flex";
+	});
 });
