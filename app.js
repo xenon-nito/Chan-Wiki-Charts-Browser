@@ -6,11 +6,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const homeButton = document.getElementById("home-button");
   const breadcrumb = document.getElementById("breadcrumb");
   
+  function ensureMobileHeaderVisible() {
+  if (window.innerWidth <= 768) {
+    mobileHeader.style.display = "flex";
+    burgerButton.style.display = "block";
+  }
+}
     //Mobile Burger Menu 
 	  function closeMobileMenu() {
 		  if (window.innerWidth <= 768) {
 			sidebar.classList.remove("active");
-			burgerButton.style.display = "block";
+			ensureMobileHeaderVisible();
 		  }
 		}
  //
@@ -148,6 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
     allImages = collectAllImages(chartIndex, lib);
     buildSidebar();
     safeRender(() => fadeTransition(() => renderCategoryTiles("category")));
+	ensureMobileHeaderVisible();
   }
 
 function buildSidebar() {
@@ -211,6 +218,7 @@ function buildSidebar() {
     sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
     history.pushState({}, "", hash);
     safeRender(() => fadeTransition(() => renderImages(favs)));
+	ensureMobileHeaderVisible();
   };
   categoryList.appendChild(favBtn);
 
@@ -263,8 +271,10 @@ function buildSidebar() {
 			categoryTitle.textContent = `${label}`;
 			currentImages = subfolder.map(p => ({ path: p, library: currentLibrary }));
 			safeRender(() => fadeTransition(() => renderImages(currentImages)));
+			ensureMobileHeaderVisible();
 			fadeTransition(() => renderSubcategoryTiles(top, subfolders));
 			    closeMobileMenu();
+			ensureMobileHeaderVisible();
 		  };
 		} else {
 		  subKeys.forEach(sub => {
@@ -293,6 +303,7 @@ function buildSidebar() {
 				  categoryTitle.textContent = `${scopedDisplay} / ${scopedLabel}`;
 				  currentImages = subfolder.map(p => ({ path: p, library: currentLibrary }));
 				  safeRender(() => fadeTransition(() => renderImages(currentImages)));
+				  ensureMobileHeaderVisible();
 				} else if (
 				  typeof subfolder === "object" &&
 				  Object.keys(subfolder).length === 1 &&
@@ -301,6 +312,7 @@ function buildSidebar() {
 				  categoryTitle.textContent = `${scopedDisplay} / ${scopedLabel}`;
 				  currentImages = subfolder["_root"].map(p => ({ path: p, library: currentLibrary }));
 				  safeRender(() => fadeTransition(() => renderImages(currentImages)));
+				  ensureMobileHeaderVisible();
 				} else {
 				  categoryTitle.textContent = `${scopedDisplay} / ${scopedLabel}`;
 				  safeRender(() => renderSubcategoryTiles(scopedSub, subfolder));
@@ -375,8 +387,10 @@ function buildSidebar() {
 			const images = subfolders["_root"].map(p => ({ path: p, library: currentLibrary }));
 			categoryTitle.textContent = `${display} / ${label}`;
 			safeRender(() => fadeTransition(() => renderImages(images)));
+			ensureMobileHeaderVisible();
 		  } else {
 			safeRender(() => fadeTransition(() => renderSubcategoryTiles(folder, subfolders)));
+			ensureMobileHeaderVisible();
 		  }
 		};
         imageViewer.appendChild(card);
@@ -401,6 +415,7 @@ function buildSidebar() {
         sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
         history.pushState({}, "", hash);
         safeRender(() => fadeTransition(() => loadCategory(`${display} / ${label}`, subfolders[sub].map(p => ({ path: p, library: currentLibrary })))));
+		ensureMobileHeaderVisible();
       };
       imageViewer.appendChild(card);
     });
@@ -411,6 +426,7 @@ function buildSidebar() {
     currentImages = images.slice();
     searchBox.value = "";
     safeRender(() => fadeTransition(() => renderImages(currentImages)));
+	ensureMobileHeaderVisible();
   }
 
   function renderImages(images) {
@@ -472,6 +488,7 @@ function buildSidebar() {
     history.pushState({}, "", "#home");
     sessionStorage.setItem("lastCategoryURL", window.location.pathname + "#home");
     safeRender(() => fadeTransition(() => renderCategoryTiles("library")));
+	ensureMobileHeaderVisible();
   };
 
   searchBox.addEventListener("input", (e) => {
@@ -488,6 +505,7 @@ function buildSidebar() {
     );
     categoryTitle.textContent = `Search results for: "${query}"`;
     safeRender(() => fadeTransition(() => renderImages(filtered)));
+	ensureMobileHeaderVisible();
   });
 
   function getFavorites(lib) {
@@ -514,8 +532,10 @@ function buildSidebar() {
       categoryTitle.textContent = `${stripPrefix(top)} / ${stripPrefix(sub)}`;
       currentImages = globalIndexes[lib][top][sub].map(p => ({ path: p, library: lib }));
       safeRender(() => fadeTransition(() => renderImages(currentImages)));
+	  ensureMobileHeaderVisible();
     } else if (top) {
 	  safeRender(() => fadeTransition(() => renderSubcategoryTiles(top, globalIndexes[lib][top])));
+	  ensureMobileHeaderVisible();
     }
   }
 
@@ -526,6 +546,7 @@ function buildSidebar() {
     })
   )).then(() => {
     safeRender(() => fadeTransition(() => renderCategoryTiles("library")));
+	ensureMobileHeaderVisible();
     handleInitialHash();
 	window.addEventListener("hashchange", () => handleInitialHash());
   });

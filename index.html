@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Chan Charts Wiki</title>
   <script defer src="app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
     <h1 class="text-lg font-bold mb-4">Categories</h1>
     <nav id="category-list" class="space-y-2"></nav>
   </aside>
-	<div class="mobile-header flex justify-between items-center bg-gray-800 p-3 w-full md:hidden" id="mobile-header">
+	<div class="mobile-header fixed top-0 left-0 z-50 flex justify-between items-center bg-gray-800 pt-[env(safe-area-inset-top)] p-3 w-full md:hidden" id="mobile-header">
 	  <button class="burger-menu text-2xl text-white" id="burger-button">☰</button>
 	  <button id="theme-toggle-mobile" class="theme-toggle-button text-2xl text-white">🌓</button>
 	</div>

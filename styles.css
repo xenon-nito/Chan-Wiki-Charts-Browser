@@ -293,6 +293,8 @@ body.light .theme-toggle-button {
 
 .mobile-header {
   display: none; /* Hidden by default */
+  padding-top: env(safe-area-inset-top); 
+  z-index: 50;
 }
 
 @media (max-width: 768px) {
