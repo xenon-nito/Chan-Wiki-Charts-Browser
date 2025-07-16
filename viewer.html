@@ -3,36 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Chart Viewer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
+    body {
+      touch-action: none; /* prevent zooming UI on mobile */
     }
-
-    #image-wrapper {
-      cursor: grab;
-      overflow: hidden;
-      position: absolute;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #chart-image {
-      transform-origin: center center;
-      transition: transform 0.1s ease;
-      user-select: none;
-      -webkit-user-drag: none;
-      max-width: none;
-      max-height: none;
-    }
-
-    #image-wrapper:active {
-      cursor: grabbing;
+    input[type=range] {
+      touch-action: pan-y;
     }
   </style>
 </head>
@@ -43,21 +22,23 @@
     <img id="chart-image" src="" alt="Chart">
   </div>
 
-  <!-- Back & Zoom Controls -->
+  <!-- Navigation Buttons -->
   <div class="absolute top-4 left-4 flex gap-2 z-10">
-    <a href="index.html" class="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1 rounded shadow text-sm">← Back</a>
+    <a id="back-button" href="#" class="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1 rounded shadow text-sm">← Back</a>
+    <a href="index.html" class="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1 rounded shadow text-sm">🏠 Home</a>
   </div>
 
-  <div class="absolute top-4 right-4 flex flex-col gap-2 z-10">
+  <!-- Zoom Buttons -->
+  <div class="absolute top-4 right-4 flex flex-col sm:flex-row gap-2 z-10">
     <button id="zoom-in" class="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1 rounded shadow text-sm">Zoom In</button>
     <button id="zoom-out" class="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1 rounded shadow text-sm">Zoom Out</button>
   </div>
 
   <!-- Zoom Slider -->
-  <div class="fixed bottom-6 left-0 right-0 flex justify-center items-center pointer-events-none z-10">
-    <div class="bg-black bg-opacity-40 px-4 py-2 rounded-lg pointer-events-auto">
+  <div class="fixed bottom-6 left-0 right-0 px-4 flex justify-center items-center z-10">
+    <div class="bg-black bg-opacity-40 px-4 py-2 rounded-lg w-full max-w-sm">
       <input type="range" id="zoom-slider" min="0.1" max="5" step="0.01" value="1"
-             class="w-64 h-2 rounded-lg appearance-none cursor-pointer accent-blue-500">
+             class="w-full h-2 rounded-lg appearance-none cursor-pointer accent-blue-500">
     </div>
   </div>
 
@@ -68,23 +49,29 @@
     const wrapper = document.getElementById("image-wrapper");
     image.src = imgPath;
 
+    // Handle Back button
+    const backBtn = document.getElementById("back-button");
+    let lastPage = sessionStorage.getItem("lastCategoryURL");
+    if (!lastPage || lastPage.endsWith("index.html") || lastPage.endsWith("index.html#home")) {
+      lastPage = "index.html#home";
+    }
+    backBtn.href = lastPage;
+    console.log("Back button will go to:", lastPage);
+
+    // Zoom functionality
     let scale = 1;
     const zoomStep = 0.25;
     const minZoom = 0.1;
     const maxZoom = 5;
-
-    let offsetX = 0;
-    let offsetY = 0;
+    let offsetX = 0, offsetY = 0;
     let isDragging = false;
-    let startX = 0;
-    let startY = 0;
+    let startX = 0, startY = 0;
 
     function applyTransform() {
       image.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
       document.getElementById("zoom-slider").value = scale.toFixed(2);
     }
 
-    // Zoom Buttons
     document.getElementById("zoom-in").onclick = () => {
       scale = Math.min(scale + zoomStep, maxZoom);
       applyTransform();
@@ -93,39 +80,32 @@
       scale = Math.max(scale - zoomStep, minZoom);
       applyTransform();
     };
-
-    // Zoom Slider
     document.getElementById("zoom-slider").addEventListener("input", (e) => {
       scale = parseFloat(e.target.value);
       applyTransform();
     });
 
-    // Dragging
     wrapper.addEventListener("mousedown", (e) => {
       isDragging = true;
       startX = e.clientX - offsetX;
       startY = e.clientY - offsetY;
       wrapper.style.cursor = "grabbing";
     });
-
     document.addEventListener("mousemove", (e) => {
       if (!isDragging) return;
       offsetX = e.clientX - startX;
       offsetY = e.clientY - startY;
       applyTransform();
     });
-
     document.addEventListener("mouseup", () => {
       isDragging = false;
       wrapper.style.cursor = "grab";
     });
-
     document.addEventListener("mouseleave", () => {
       isDragging = false;
       wrapper.style.cursor = "grab";
     });
 
-    // Keyboard zoom
     document.addEventListener("keydown", (e) => {
       if (e.key === '+' || e.key === '=') {
         scale = Math.min(scale + zoomStep, maxZoom);
@@ -133,6 +113,50 @@
       } else if (e.key === '-') {
         scale = Math.max(scale - zoomStep, minZoom);
         applyTransform();
+      }
+    });
+
+    // Touch support
+    let lastTouchDistance = null;
+    wrapper.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastTouchDistance = Math.hypot(dx, dy);
+      } else if (e.touches.length === 1) {
+        startX = e.touches[0].clientX - offsetX;
+        startY = e.touches[0].clientY - offsetY;
+        isDragging = true;
+      }
+    }, { passive: false });
+
+    wrapper.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const newDistance = Math.hypot(dx, dy);
+        if (lastTouchDistance) {
+          const zoomChange = newDistance / lastTouchDistance;
+          scale = Math.min(Math.max(scale * zoomChange, minZoom), maxZoom);
+          lastTouchDistance = newDistance;
+          applyTransform();
+        }
+      } else if (e.touches.length === 1 && isDragging) {
+        offsetX = e.touches[0].clientX - startX;
+        offsetY = e.touches[0].clientY - startY;
+        applyTransform();
+      }
+    }, { passive: false });
+
+    wrapper.addEventListener("touchend", (e) => {
+      if (e.touches.length < 2) {
+        lastTouchDistance = null;
+      }
+      if (e.touches.length === 0) {
+        isDragging = false;
+        wrapper.style.cursor = "grab";
       }
     });
 
