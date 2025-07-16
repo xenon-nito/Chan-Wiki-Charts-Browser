@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const imageViewer = document.getElementById("image-viewer");
   const searchBox = document.getElementById("search-box");
   const homeButton = document.getElementById("home-button");
+  const breadcrumb = document.getElementById("breadcrumb");
 
   function stripPrefix(name) {
     return name.replace(/^\d+[_ ]/, "").replace(/_/g, " ").replace(/\.[^.]+$/, "");
@@ -43,12 +44,57 @@ document.addEventListener("DOMContentLoaded", () => {
     return images;
   }
 
+  function renderBreadcrumb() {
+    const hash = window.location.hash.slice(1);
+    if (!hash) {
+      breadcrumb.innerHTML = `<span>🏠 Home</span>`;
+      return;
+    }
+
+    const parts = hash.split("/").map(decodeURIComponent);
+    const links = [];
+
+    links.push(`<a href="#home" class="hover:underline">🏠 Home</a>`);
+
+    if (parts.length >= 1) {
+      const lib = parts[0];
+      const libLabel = {
+        lit: "📚 Lit",
+        tv: "📺 TV",
+        games: "🎮 Games",
+        anime: "🍥 Anime",
+        music: "🎵 Music"
+      }[lib] || lib;
+      links.push(`<a href="#${lib}" class="hover:underline">${libLabel}</a>`);
+    }
+
+    if (parts.length >= 2) {
+      const top = parts[1];
+      const icon = categoryIcons[top] || "📂";
+      links.push(`<a href="#${parts.slice(0, 2).join("/")}" class="hover:underline">${icon} ${stripPrefix(top)}</a>`);
+    }
+
+    if (parts.length >= 3) {
+      const sub = parts[2];
+      const key = `${parts[1]}/${sub}`;
+      const icon = categoryIcons[key] || "📁";
+      links.push(`<span>${icon} ${stripPrefix(sub)}</span>`);
+    }
+
+    breadcrumb.innerHTML = links.join(" / ");
+  }
+
+	function safeRender(fn) {
+	  fn();
+	  renderBreadcrumb();
+	}
+
   function loadLibrary(lib) {
     currentLibrary = lib;
     chartIndex = globalIndexes[lib];
     allImages = collectAllImages(chartIndex, lib);
     buildSidebar();
-    renderCategoryTiles("category");
+    safeRender(() => renderCategoryTiles("category"));
   }
 
   function buildSidebar() {
@@ -58,7 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const libraries = [
         { name: "lit", label: "📚 Literature" },
         { name: "tv", label: "📺 Television" },
-        { name: "games", label: "🎮 Games" }
+        { name: "games", label: "🎮 Games" },
+        { name: "anime", label: "🍥 Anime" },
+        { name: "music", label: "🎵 Music" }
       ];
       libraries.forEach(lib => {
         const link = document.createElement("a");
@@ -87,11 +135,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const hash = `#${currentLibrary}/favorites`;
       sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
       history.pushState({}, "", hash);
-      renderImages(favs);
+      safeRender(() => renderImages(favs));
     };
     categoryList.appendChild(favBtn);
 
-    Object.keys(chartIndex).sort((a, b) => parseInt(a) - parseInt(b)).forEach(top => {
+    Object.keys(chartIndex)
+		.sort((a, b) => stripPrefix(a).localeCompare(stripPrefix(b)))
+		.forEach(top => {
       const displayName = stripPrefix(top);
       const icon = categoryIcons[top] || "📂";
       const wrapper = document.createElement("div");
@@ -132,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
             categoryTitle.textContent = `${scopedDisplay} / ${scopedLabel}`;
             searchBox.value = "";
             currentImages = chartIndex[scopedTop][scopedSub].map(p => ({ path: p, library: currentLibrary }));
-            renderImages(currentImages);
+            safeRender(() => renderImages(currentImages));
           };
         })();
 
@@ -156,7 +206,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const libraries = [
         { name: "Lit", icon: "📚", color: "bg-indigo-600" },
         { name: "TV", icon: "📺", color: "bg-green-600" },
-        { name: "Games", icon: "🎮", color: "bg-red-600" }
+        { name: "Games", icon: "🎮", color: "bg-red-600" },
+        { name: "Anime", icon: "🍥", color: "bg-pink-600" },
+        { name: "Music", icon: "🎵", color: "bg-yellow-600" }
       ];
 
       libraries.forEach(lib => {
@@ -175,19 +227,21 @@ document.addEventListener("DOMContentLoaded", () => {
       categoryTitle.textContent = `📁 Categories in ${currentLibrary.toUpperCase()}`;
       buildSidebar();
 
-      Object.keys(chartIndex).forEach(folder => {
+      Object.keys(chartIndex)
+		.sort((a, b) => stripPrefix(a).localeCompare(stripPrefix(b)))
+		.forEach(folder => {
         const displayName = stripPrefix(folder);
         const icon = categoryIcons[folder] || "📂";
         const subfolders = chartIndex[folder];
 
         const card = document.createElement("div");
-        card.className = "bg-slate-700 w-full sm:w-44 h-52 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer shadow hover:scale-105 transition space-y-2";
+        card.className = "bg-slate-700 w-full sm:w-44 h-52 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer shadow transition-transform duration-300 ease-in-out transform hover:scale-105 hover:rotate-1";
         card.innerHTML = `<div class="text-4xl">${icon}</div><div class="text-lg font-bold">${displayName}</div>`;
         card.onclick = () => {
           const hash = `#${currentLibrary}/${folder}`;
           sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
           history.pushState({}, "", hash);
-          renderSubcategoryTiles(folder, subfolders);
+          safeRender(() => renderSubcategoryTiles(folder, subfolders));
         };
         imageViewer.appendChild(card);
       });
@@ -204,13 +258,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const label = sub === "_root" ? "Main" : stripPrefix(sub);
       const icon = categoryIcons[`${categoryKey}/${sub}`] || "📁";
       const card = document.createElement("div");
-      card.className = "bg-slate-700 w-full sm:w-44 h-52 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer shadow hover:scale-105 transition space-y-2";
+      card.className = "bg-slate-700 w-full sm:w-44 h-52 text-white rounded-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer shadow transition-transform duration-300 ease-in-out transform hover:scale-105 hover:-rotate-1";
       card.innerHTML = `<div class="text-3xl">${icon}</div><div class="text-lg font-bold">${label}</div>`;
       card.onclick = () => {
         const hash = `#${currentLibrary}/${categoryKey}/${sub}`;
         sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
         history.pushState({}, "", hash);
-        loadCategory(`${display} / ${label}`, subfolders[sub].map(p => ({ path: p, library: currentLibrary })));
+        safeRender(() => loadCategory(`${display} / ${label}`, subfolders[sub].map(p => ({ path: p, library: currentLibrary }))));
       };
       imageViewer.appendChild(card);
     });
@@ -220,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
     categoryTitle.textContent = title;
     currentImages = images.slice();
     searchBox.value = "";
-    renderImages(currentImages);
+    safeRender(() => renderImages(currentImages));
   }
 
   function renderImages(images) {
@@ -281,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentLibrary = "";
     history.pushState({}, "", "#home");
     sessionStorage.setItem("lastCategoryURL", window.location.pathname + "#home");
-    renderCategoryTiles("library");
+    safeRender(() => renderCategoryTiles("library"));
   };
 
   searchBox.addEventListener("input", (e) => {
@@ -291,12 +345,13 @@ document.addEventListener("DOMContentLoaded", () => {
       else renderCategoryTiles(currentLibrary ? "category" : "library");
       return;
     }
+
     const imagesToSearch = currentLibrary ? allImages : allImagesGlobal;
     const filtered = imagesToSearch.filter(item =>
       stripPrefix(item.path.split("/").pop().toLowerCase()).includes(query)
     );
     categoryTitle.textContent = `Search results for: "${query}"`;
-    renderImages(filtered);
+    safeRender(() => renderImages(filtered));
   });
 
   function getFavorites(lib) {
@@ -313,15 +368,18 @@ document.addEventListener("DOMContentLoaded", () => {
   function handleInitialHash() {
     const hash = window.location.hash.slice(1);
     if (!hash) return;
-    const [lib, top, sub] = hash.split("/");
+    const [libRaw, topRaw, subRaw] = hash.split("/");
+	const lib = decodeURIComponent(libRaw);
+	const top = decodeURIComponent(topRaw || "");
+	const sub = decodeURIComponent(subRaw || "");
     if (!lib || !globalIndexes[lib]) return;
     loadLibrary(lib);
     if (top && sub && globalIndexes[lib][top]?.[sub]) {
       categoryTitle.textContent = `${stripPrefix(top)} / ${stripPrefix(sub)}`;
       currentImages = globalIndexes[lib][top][sub].map(p => ({ path: p, library: lib }));
-      renderImages(currentImages);
+      safeRender(() => renderImages(currentImages));
     } else if (top) {
-      renderSubcategoryTiles(top, globalIndexes[lib][top]);
+      safeRender(() => renderSubcategoryTiles(top, globalIndexes[lib][top]));
     }
   }
 
@@ -331,7 +389,28 @@ document.addEventListener("DOMContentLoaded", () => {
       allImagesGlobal.push(...collectAllImages(data, lib));
     })
   )).then(() => {
-    renderCategoryTiles("library");
+    safeRender(() => renderCategoryTiles("library"));
     handleInitialHash();
+	window.addEventListener("hashchange", () => handleInitialHash());
   });
+    // Theme toggle logic
+  const themeToggle = document.getElementById("theme-toggle");
+  const body = document.body;
+
+  // Load theme preference from localStorage
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "light") {
+    body.classList.add("light");
+  }
+
+  themeToggle.addEventListener("click", () => {
+    body.classList.toggle("light");
+    const newTheme = body.classList.contains("light") ? "light" : "dark";
+    localStorage.setItem("theme", newTheme);
+    themeToggle.textContent = newTheme === "light" ? "Toggle Dark Mode" : "Toggle Light Mode";
+  });
+
+  // Update button label on load
+  themeToggle.textContent = body.classList.contains("light") ? "Toggle Dark Mode" : "Toggle Light Mode";
+
 });

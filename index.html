@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chan Charts Wiki</title>
   <script defer src="app.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="icon" href="data:,">
@@ -18,11 +19,13 @@
 
   <!-- Main content -->
   <main class="flex-1 overflow-y-auto p-6">
+	
 	<div class="flex justify-between items-center mb-4">
 	  <button id="theme-toggle" class="px-3 py-1 rounded bg-gray-600 hover:bg-gray-500 text-sm">
 		Toggle Light Mode
 	  </button>
 	</div>
+	<div id="breadcrumb" class="text-sm text-gray-300 px-4 py-2"></div>
 	<div class="flex justify-between items-center mb-4">
 	  <h2 id="category-title" class="text-2xl font-bold">Select a category</h2>
 	  <button id="home-button" class="ml-4 px-3 py-1 rounded bg-gray-600 hover:bg-gray-500 text-sm">
@@ -36,7 +39,7 @@
 	  placeholder="Search images..."
 	  class="w-full p-2 mb-4 rounded bg-gray-800 text-white placeholder-gray-400"
 	/>
-	<div id="image-viewer" class="flex flex-wrap justify-center items-center gap-6 px-4 py-6 min-h-[60vh]"></div>
+	<div id="image-viewer" class="opacity-100 translate-y-0 transition-all duration-300"></div>
   </main>
 </body>
 </html>
