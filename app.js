@@ -45,19 +45,42 @@ document.addEventListener("DOMContentLoaded", () => {
   let allImagesGlobal = [];
   let currentImages = [];
   let currentLibrary = "";
-  const preloadLibraries = ["lit", "tv", "games"];
+  const preloadLibraries = ["lit", "tv", "games", "anime", "music"];
   const globalIndexes = {};
 
-  const categoryIcons = {
-    "1_Beginnings": "📖", "2_General": "🧠", "3_Philosophy": "⚖️", "4_Countries.Nationalities": "🌍",
-    "5_Speculative Fiction": "🛸", "6_Religion": "🕊️", "7_Ideologies": "🚩", "8_Pills": "💊",
-    "9_Science": "🔬", "10_Meme Charts": "🖼️", "11_Other Boards": "🧩",
-    "General": "🎮", "Platforms": "🕹️", "Platforms/Nintendo": "🟥", "Platforms/Sony": "🟦",
-    "Platforms/Xbox": "🟩", "Platforms/PC": "💻", "Platforms/Sega": "🌀",
-    "Countries": "🌍", "Decades": "📆", "filmcore": "🎞️",
-    "Genres": "🎭", "History": "📜", "Levels": "🧩", "Other": "🔀"
-  };
+	const categoryIcons = {
+	  "1_Beginnings": "📖", "2_General": "🧠", "3_Philosophy": "⚖️", "4_Countries.Nationalities": "🌍",
+	  "5_Speculative Fiction": "🛸", "6_Religion": "🕊️", "7_Ideologies": "🚩", "8_Pills": "💊",
+	  "9_Science": "🔬", "10_Meme Charts": "🖼️", "11_Other Boards": "🧩",
+	  "General": "🎮", "Platforms": "🕹️", "Platforms/Nintendo": "🟥", "Platforms/Sony": "🟦",
+	  "Platforms/Xbox": "🟩", "Platforms/PC": "💻", "Platforms/Sega": "🌀",
+	  "Countries": "🌍", "Decades": "📆", "filmcore": "🎞️",
+	  "Genres": "🎭", "History": "📜", "Levels": "🧩", "Other": "🔀",
 
+	  // 🎵 Music (mu_index.json)
+	  "Countries/_root": "🗺️",
+	  "Genres/_root": "🎧",
+	  "Other/_root": "📀",
+
+	  // 🍥 Anime (anime_index.json)
+	  "Anime General": "📺",
+	  "Anime General/_root": "🧭",
+	  "Anime Palette": "🎨",
+	  "Anime Palette/_root": "🖍️",
+	  "Manga": "📚",
+	  "Manga/_root": "📖",
+	  "Newbie": "🌱",
+	  "Newbie/_root": "📘",
+	  "VN": "💻",
+	  "VN/_root": "🎮"
+	};
+	const libraryPaths = {
+	  lit: "lit",
+	  tv: "tv",
+	  games: "games",
+	  anime: "a",
+	  music: "mu"
+	};
   function getIndexFile(lib) {
     return `${lib}_index.json`;
   }
@@ -154,11 +177,11 @@ function buildSidebar() {
 
   if (!currentLibrary) {
     const libraries = [
-      { name: "lit", label: "📚 Literature" },
-      { name: "tv", label: "📺 Television" },
-      { name: "games", label: "🎮 Games" },
-      { name: "anime", label: "🍥 Anime" },
-      { name: "music", label: "🎵 Music" }
+      { name: "lit", label: "📚 /lit/erature" },
+      { name: "tv", label: "📺 /tv/" },
+      { name: "games", label: "🎮 /v/idya" },
+      { name: "anime", label: "🍥 /a/nime" },
+      { name: "music", label: "🎵 /mu/sic" }
     ];
     libraries.forEach(lib => {
       const link = document.createElement("a");
@@ -296,24 +319,24 @@ function buildSidebar() {
     imageViewer.innerHTML = "";
     imageViewer.className = type === "library"
       ? "flex flex-wrap justify-center items-center gap-6 px-4 py-6 min-h-[60vh]"
-      : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center px-4 py-6";
+      : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center gap-6 px-4 py-6";
 
     if (type === "library") {
       buildSidebar();
       categoryTitle.textContent = "Choose a library";
 
       const libraries = [
-        { name: "Lit", icon: "📚", color: "bg-indigo-600" },
-        { name: "TV", icon: "📺", color: "bg-green-600" },
-        { name: "Games", icon: "🎮", color: "bg-red-600" },
-        { name: "Anime", icon: "🍥", color: "bg-pink-600" },
-        { name: "Music", icon: "🎵", color: "bg-yellow-600" }
-      ];
+		  { name: "lit", label: "/lit/erature", icon: "📚", color: "bg-indigo-600" },
+		  { name: "tv", label: "/tv/", icon: "📺", color: "bg-green-600" },
+		  { name: "games", label: "/v/idya", icon: "🎮", color: "bg-red-600" },
+		  { name: "anime", label: "/a/nime", icon: "🍥", color: "bg-pink-600" },
+		  { name: "music", label: "/mu/sic", icon: "🎵", color: "bg-yellow-600" }
+		];
 
       libraries.forEach(lib => {
         const card = document.createElement("div");
         card.className = `${lib.color} w-full sm:w-44 h-48 text-white rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer shadow hover:scale-105 transform transition space-y-2`;
-        card.innerHTML = `<div class="text-4xl">${lib.icon}</div><div class="text-lg font-bold">${lib.name}</div>`;
+        card.innerHTML = `<div class="text-4xl">${lib.icon}</div><div class="text-lg font-bold">${lib.label}</div>`;
         card.onclick = () => {
           const hash = `#${lib.name.toLowerCase()}`;
           sessionStorage.setItem("lastCategoryURL", window.location.pathname + hash);
@@ -363,7 +386,7 @@ function buildSidebar() {
 
   function renderSubcategoryTiles(categoryKey, subfolders) {
     imageViewer.innerHTML = "";
-    imageViewer.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center px-4 py-6";
+    imageViewer.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center gap-6 px-4 py-6";
     const display = stripPrefix(categoryKey);
     categoryTitle.textContent = `📂 Subcategories of ${display}`;
 
@@ -392,7 +415,7 @@ function buildSidebar() {
 
   function renderImages(images) {
     imageViewer.innerHTML = "";
-    imageViewer.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center px-4 py-6";
+    imageViewer.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center gap-6 px-4 py-6";
 
     images.slice().sort((a, b) => {
       const nameA = stripPrefix(a.path.split("/").pop().toLowerCase());
@@ -407,7 +430,7 @@ function buildSidebar() {
       wrapper.className = "thumb-wrapper text-center relative";
 
       const link = document.createElement("a");
-      const viewerURL = `viewer.html?img=${encodeURIComponent(`${library}/${path}`)}`;
+      const viewerURL = `viewer.html?img=${encodeURIComponent(`${libraryPaths[library]}/${path}`)}`;
       link.href = viewerURL;
       link.onclick = (e) => {
         e.preventDefault();
@@ -415,7 +438,7 @@ function buildSidebar() {
       };
 
       const img = document.createElement("img");
-      img.src = `${library}/thumbnails/${path}`;
+      img.src = `${libraryPaths[library]}/thumbnails/${encodeURIComponent(path)}`;
       img.alt = fileName;
       img.className = "rounded shadow";
 
