@@ -1,0 +1,78 @@
+{
+  "General": {
+    "_root": [
+      "General/-v- 2019.jpg",
+      "General/1990s games.jpg",
+      "General/2000s.jpg",
+      "General/2010s.jpg",
+      "General/armored core.jpg",
+      "General/cyberpunk 2.jpg",
+      "General/cyberpunk.jpg",
+      "General/Essential Artistic Games.jpg",
+      "General/Essential Patriciancore 2.jpg",
+      "General/Essential Patriciancore.jpg",
+      "General/essential_01.jpg",
+      "General/Horror 2.jpg",
+      "General/Horror.jpg",
+      "General/JRPG.jpg",
+      "General/JRPG2.jpg",
+      "General/Overview of EYE Divine Cybermancy.jpg",
+      "General/Persona.jpg",
+      "General/SMB hacks.jpg",
+      "General/TG_recommended_games.jpg",
+      "General/the 8 v essentials.jpg",
+      "General/The best stories in all of vidya.jpg",
+      "General/top 100 RPGs of all time.jpg",
+      "General/Visual Novels.jpg"
+    ]
+  },
+  "Platforms": {
+    "Nintendo": [
+      "Platforms/Nintendo/3DS_1.jpg",
+      "Platforms/Nintendo/3DS_2.jpg",
+      "Platforms/Nintendo/DS_Recommended_Games.jpg",
+      "Platforms/Nintendo/GameCube-1.jpg",
+      "Platforms/Nintendo/GameCube.jpg",
+      "Platforms/Nintendo/GBA-1.jpg",
+      "Platforms/Nintendo/GBA-2.jpg",
+      "Platforms/Nintendo/GBA.jpg",
+      "Platforms/Nintendo/N64.jpg",
+      "Platforms/Nintendo/NES.jpg",
+      "Platforms/Nintendo/SNES-1.jpg",
+      "Platforms/Nintendo/SNES-2.jpg",
+      "Platforms/Nintendo/SNES.jpg",
+      "Platforms/Nintendo/switch.jpg",
+      "Platforms/Nintendo/Wii U.jpg",
+      "Platforms/Nintendo/Wii-1.jpg",
+      "Platforms/Nintendo/Wii.jpg"
+    ],
+    "PC": [
+      "Platforms/PC/DOS_Recommended_Floppies_List.jpg",
+      "Platforms/PC/PC.jpg",
+      "Platforms/PC/PC1.jpg",
+      "Platforms/PC/PC2.jpg"
+    ],
+    "Sega": [
+      "Platforms/Sega/dreamcast.jpg",
+      "Platforms/Sega/Genesis_Recommended_Games.jpg",
+      "Platforms/Sega/saturn.jpg"
+    ],
+    "Sony": [
+      "Platforms/Sony/PS1.jpg",
+      "Platforms/Sony/PS1_1.jpg",
+      "Platforms/Sony/PS2-1 .jpg",
+      "Platforms/Sony/PS2.jpg",
+      "Platforms/Sony/PS3-1.jpg",
+      "Platforms/Sony/PS3.jpg",
+      "Platforms/Sony/PSP.jpg",
+      "Platforms/Sony/PSP2.jpg",
+      "Platforms/Sony/psvita.jpg"
+    ],
+    "Xbox": [
+      "Platforms/Xbox/Xbox 360-1.jpg",
+      "Platforms/Xbox/Xbox 360.jpg",
+      "Platforms/Xbox/Xbox_games 2.jpg",
+      "Platforms/Xbox/xbox_games.jpg"
+    ]
+  }
+}
