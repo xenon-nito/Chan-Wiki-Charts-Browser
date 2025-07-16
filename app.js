@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       const img = document.createElement("img");
-      img.src = `${library}/${path}`;
+      img.src = `${library}/thumbnails/${path}`;
       img.alt = fileName;
       img.className = "rounded shadow";
 
