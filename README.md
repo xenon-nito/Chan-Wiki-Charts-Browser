@@ -1,35 +1,58 @@
 # 4chan Wiki Chart Browser
 
-A web-based UI to browse chart backups from the /lit/, /tv/, and /v/ boards.
+A web-based UI to browse chart backups from the `/lit/`, `/tv/`, `/v/`, `/a/`, and `/mu/` boards.
 
 ## 🔍 Features
 
 - Category-based navigation
 - Subcategory collapsible sidebar
-- Thumbnail previews + zoom viewer
+- Thumbnail previews + fullscreen viewer
 - Favorites system (saved in browser)
-- Fully offline-capable
+- Mobile and desktop support
 - Search across all libraries
+- Offline-capable (can run locally)
+- 🌓 Light/dark theme toggle
 
 ## 📁 Libraries
 
-- 📚 Lit (`/lit`)
-- 📺 TV (`/tv`)
-- 🎮 Games (`/games`)
+- 📚 `/lit/erature`
+- 📺 `/tv/`
+- 🎮 `/v/idya`
+- 🍥 `/a/nime`
+- 🎵 `/mu/sic`
 
-## 🧠 How to Use
+## ▶️ How to Use
 
-1. Open `index.html` in your browser
-2. Browse charts by category or use the search
-3. Click a chart to open fullscreen viewer
-4. Use Zoom buttons, drag to pan, or slider to adjust
+### Option 1: Open Locally (No Server)
 
-## 🔒 Favorites
+1. Open `index.html` directly in your browser
+2. Browse categories or use the search bar
+3. Click a chart to view it fullscreen
 
-Favorites are stored in your browser (`localStorage`). They are private to you and persist unless your browser data is cleared.
+⚠️ Some browsers (like Chrome) may block local file access for dynamic JS apps. If charts or thumbnails don't show up, use the local server option below.
+
+---
+
+### Option 2: Start Local Server (Recommended)
+
+1. Double-click `start_server.bat`
+2. It will:
+   - Launch a Python HTTP server on port `8000`
+   - Open [http://localhost:8000](http://localhost:8000) in your browser
+   - Automatically close the batch window
+
+3. A separate command window will stay open running the server  
+   ❌ Close it or press `CTRL + C` to stop the server
+
+---
+
+## ⭐ Favorites
+
+Favorites are saved in your browser (via `localStorage`). They persist across visits, unless you clear your browser data.
+
+---
 
 ## 🧑‍💻 Credits
 
-Created with help from [ChatGPT](https://openai.com/chatgpt) and customized for offline use.
-
----
+Thanks to all the Anons that made these charts.
+Created using [ChatGPT](https://openai.com/chatgpt), with additions and fixes for offline browsing, category icons, mobile UX, and library expansion.
