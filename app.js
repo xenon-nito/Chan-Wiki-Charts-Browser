@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchBox = document.getElementById("search-box");
   const homeButton = document.getElementById("home-button");
   const breadcrumb = document.getElementById("breadcrumb");
-  
+  console.log("app.js is running");
+
   function ensureMobileHeaderVisible() {
   if (window.innerWidth <= 768) {
     mobileHeader.style.display = "flex";
@@ -626,4 +627,28 @@ function buildSidebar() {
 	  burgerButton.style.display = "block";
 	  mobileHeader.style.display = "flex";
 	});
+	// ===== About modal logic =====
+
+	const aboutBtn = document.getElementById("aboutBtn");
+    const aboutOverlay = document.getElementById("aboutOverlay");
+    const closeOverlay = document.getElementById("closeOverlay");
+
+    if (aboutBtn && aboutOverlay && closeOverlay) {
+        // Show overlay
+        aboutBtn.addEventListener("click", () => {
+            aboutOverlay.style.display = "flex";
+        });
+
+        // Close when clicking X
+        closeOverlay.addEventListener("click", () => {
+            aboutOverlay.style.display = "none";
+        });
+
+        // Close when clicking outside the box
+        aboutOverlay.addEventListener("click", (e) => {
+            if (e.target === aboutOverlay) {
+                aboutOverlay.style.display = "none";
+            }
+        });
+    }
 });
