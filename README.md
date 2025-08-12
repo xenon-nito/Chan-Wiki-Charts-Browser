@@ -1,6 +1,7 @@
 # 4chan Wiki Chart Browser
 
 A web-based UI to browse chart backups from the `/lit/`, `/tv/`, `/v/`, `/a/`, and `/mu/` boards.
+
 **Can be browsed using this [LINK](https://xenon-nito.github.io/Chan-Wiki-Charts-Browser/)**
 ## 🔍 Features
 
